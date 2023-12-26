@@ -1,0 +1,98 @@
+
+
+动态扩大数组大小如下 ：
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<stdbool.h>
+
+const BLOCK_SIZE = 20;
+
+typedef struct
+{
+    int* array;//一个整形变量加上*后，就成一个指针变量，指针变量也可以是数组，数组是特殊的指针，所这里array就是数组
+    int size;//数组大小，这里要通过array_create函数初始化后size才有值
+} Array;
+
+//函数申明
+Array array_create(int init_size);//用于初始化数组
+int array_size(Array* a);//返回数组大小
+void array_free(Array* a);//释放数组
+int* array_at(Array* a, int index);//用于获取数组成员值、设置数组成员值
+void array_inflate(Array* a, int more_size);//扩展数组大小
+
+Array array_create(int init_size)
+{
+    /*功能是初始化一个数组*/
+    Array a;
+    a.size = init_size;
+    //malloc返回一段内存的首地址给到a.array，其实a.array就是指针，数组本来就是指针
+    a.array = (int*)malloc(sizeof(int) * a.size);
+    //我们返回去的是这个结构体变量a，不是指针，后面调用其他需要传指针的函数时，需要对a取地址
+    return a;
+}
+
+void array_free(Array* a)
+{
+    free(a->array);
+    a->array = NULL;
+    a->size = 0;
+}
+
+int array_size(Array* a)
+{
+    return a->size;
+}
+
+int* array_at(Array* a, int index)
+{
+    if (index >= a->size)
+    {
+        /*
+        当index >= a.size时，表示当前下标已经越界了，我们需要动态去扩大数组
+        */
+        //array_inflate(a, index - a->size + 1);//index - a->size + 1表示要扩多大，所以用当前的index-a.size+1,刚好扩展一个，其实这样效率不高的，下面用块儿方式效率高
+        array_inflate(a, (index/BLOCK_SIZE+1)* BLOCK_SIZE-a->size);//使用了块的概念，效率更高
+    }
+    return &(a->array[index]);
+}
+
+void array_inflate(Array* a, int more_size)
+{
+    /*
+    功能是动太扩大数组
+    首先定义一个指针p去申请更多的内存，所以a->size + more_size这样，把之前的数组大小加上现在更多的数组大小，malloc申请到后返回给p一个地址
+    第二把之前数组中的元素全部备份到p上，使用循环
+    第三释放之前内存空间，
+    第四把指针变量p的地址赋到a.array，新的大小a.size+more_size大小，这样完成事个扩大数组过程。
+    */
+    int* p = (int*)malloc(sizeof(int) * (a->size + more_size));
+    int i;
+    for (i = 0; i < a->size; i++)
+    {
+        p[i] = a->array[i];
+    }
+    free(a->array);
+    a->array = p;
+    a->size += more_size;
+}
+
+int main()
+{
+    Array arr = array_create(3);
+    printf("%d\n", array_size(&arr));
+    *array_at(&arr, 0) = 100;
+    printf("%d\n", *array_at(&arr, 0));
+
+    int number = 0;
+    int cnt = 0;
+    while (number != -1) {
+        printf("请输入一个数字：\n");
+        scanf("%d", &number);
+	//cnt经过3次循环后，cnt就比我们最初定义的数组arr大了，所以使用到array_at内部的array_inflate函数去扩大空间
+        *array_at(&arr, cnt++) = number;
+    }
+    system("pause");
+    return 0;
+}

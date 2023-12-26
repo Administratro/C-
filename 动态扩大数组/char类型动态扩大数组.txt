@@ -1,0 +1,85 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+
+typedef struct {
+	char* array;
+	int size;
+
+} Array;
+
+Array array_create(int size);
+int array_size(Array *a);
+void array_free(Array *a);
+char* array_at(Array *a,int index);
+void array_inflate(Array* a, int more_size);
+
+Array array_create(int size) 
+{
+	Array ar;
+	ar.array=(char*)malloc(sizeof(char)*size);
+	ar.size = size;
+	return ar;
+}
+
+int array_size(Array *a) 
+{
+	return a->size;
+}
+
+void array_free(Array *a) 
+{
+	free(a->array);
+	a->array = NULL;
+	a->size = NULL;
+}
+
+char* array_at(Array *a,int index) 
+{
+	if (index >= a->size) 
+	{
+		array_inflate(a, index - a->size + 1);
+	}
+	return &(a->array[index]);//这里不能值，要返回这个数组变量的地址，方便我们做指针的解引用，左值运算等
+}
+
+void array_inflate(Array* a, int more_size) 
+{
+	char* p = NULL;
+	p = (char*)malloc(sizeof(char)*(more_size+a->size));
+	for (int i = 0; i < a->size;i++) 
+	{
+		p[i] = a->array[i];
+	}
+	free(a->array);
+	a->array = p;
+	a->size += more_size;
+}
+
+int main()
+{
+	Array a;
+	int length=0;
+	a=array_create(3);
+	//array_free(&a);
+	length = array_size(&a);
+	printf("我们创建数组a长度为：%d\n",length);
+
+	*array_at(&a, 0) = 'A';//给字符数组a下标为0的元素赋值'A'，*array_at(&a, 0)相当于一个数组变量
+	printf("我们创建数组a第0个元素是什么：%c\n", *array_at(&a, 0));
+
+	char item = '1';
+	int cnt = 0;
+	do{
+		printf("请输入一个字符：\n");
+		scanf("%c",&item);
+		while (getchar() != '\n');
+		*array_at(&a,cnt++)=item;
+		printf("打印出刚才输入的字符：%c\n", *array_at(&a, cnt-1));
+	} while (item!='0');
+
+	system("pause");
+	return 0;
+
+}
