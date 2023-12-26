@@ -1,0 +1,44 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<stdbool.h>
+
+void copyfile(char* src, char* dest)
+{
+	FILE* in, * out;
+	int ch = 0;
+	in = fopen(src, "r");
+	out = fopen(dest, "w");
+	//in和out通过返回值NULL来判断有没有打开文件成功
+	if (in != NULL && out != NULL)
+	{
+		char str[10] = {NULL};//每次循环取到的2字节数据
+		char line[100] = {NULL};//用于存放整行数据
+		while (fgets(str,2,in)!=NULL) 
+		{
+			strcat(line,str);//把取到2字节的数据拼接到line字符串数组中
+			if (str[strlen(str)-1] != '\n')//判断每次取到的数据是否有‘\n’,如果有'\n'就说明到了行尾
+			{
+				fputs(line,out);
+				line[0] = '\0';//处理完整行数据后，清空line
+			}
+		}
+		printf("文件复制完成!\n");
+		fclose(in);
+		fclose(out);
+	}
+}
+
+int main()
+{
+	//定义两个字符串常量指针，源目文件路径
+	char* src = "D:\\learn\\C\\实验\\Project4\\Project4\\a.txt";
+	char* dest = "D:\\learn\\C\\实验\\copyfile2\\copyfile2\\b.txt";
+
+	copyfile(src, dest);
+
+	system("pause");
+	return 0;
+
+}

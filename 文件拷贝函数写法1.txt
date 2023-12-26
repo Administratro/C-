@@ -1,0 +1,49 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<stdbool.h>
+
+void copyfile(char* src, char* dest)
+{
+	FILE* in, * out;
+	int ch = 0;
+	in = fopen(src, "r");
+	out = fopen(dest, "w");
+	//in和out通过返回值NULL来判断有没有打开文件成功
+	if (in != NULL && out != NULL)
+	{
+		do
+		{	//第一步通过fgec函数读取src文件中第一个字符，每次读一个字符都判断有没有到文件尾（EOF）
+			//没有读到到文件尾就使用fputc函数到字符写入到dest文件中
+			ch = fgetc(in);
+			if (ch != EOF)
+			{
+				//printf("%c", ch);
+				fputc(ch, out);
+			}
+			else
+			{
+				printf("文件复制完毕！\n");
+				fclose(in);
+				fclose(out);
+				break;
+			}
+		} while (true);
+
+	}
+}
+
+int main()
+{
+	//定义两个字符串常量指针，源目文件路径
+	//把a内容复制到b中
+	char* src = "D:\\learn\\C\\实验\\copyfile\\copyfile\\a.txt";
+	char* dest = "D:\\learn\\C\\实验\\copyfile\\copyfile\\b.txt";
+
+	copyfile(src, dest);
+
+	system("pause");
+	return 0;
+
+}
