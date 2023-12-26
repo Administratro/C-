@@ -1,0 +1,28 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+int main() {
+	int arr[] = { 2,4,0,5,7,1,3,8,9 };
+	int length = sizeof(arr) / sizeof(arr[0]);
+	int temp = 0;
+	
+	//外层循环负责对比轮数，一共要对比8次，length-1次
+	for (int i = 0; i < length; i++)
+	{	
+		//对比次数是数组长度-对比轮数-1
+		for (int j = 0; j < length - i - 1;j++) {
+			if (arr[j] > arr[j + 1]) {
+				temp = arr[j];
+				arr[j] = arr[j+1];
+				arr[j + 1] = temp;
+			}
+		}
+	}
+
+	for (int k = 0; k < length; k++)
+	{
+		printf("数组中的内容为：%d\n",arr[k]);
+	}
+	system("pause");
+	return 0;
+}

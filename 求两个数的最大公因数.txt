@@ -1,0 +1,37 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<stdbool.h>
+
+
+int main()
+{
+    int a = 18, b = 27;
+    int arr[100] = { 0 };
+    int flage = false;
+    int item = 0;
+    printf("请输入两个数，用于求最大公因数：\n");
+    scanf("%d %d",&a,&b);
+    while (getchar() != '\n');
+    for (int i = 2; i < a; i++)
+    {
+        if (a%i==0 && b%i==0) 
+        {
+            item = i;
+            flage = true;
+        }
+    }
+    if (flage) 
+    {
+        printf("最大公因数为：%d\n",item);
+    }
+    else
+    {
+        printf("没有最大公因数");
+    }
+
+
+    system("pause");
+    return 0;
+}

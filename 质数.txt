@@ -1,0 +1,35 @@
+#define _CRT_SECURE_NO_WARNINGS
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<stdbool.h>
+
+
+int main()
+{
+    int arr[] = {1,2,3,4,5,6,7,8,9,10};
+    int i = 0,item=0;
+    int flag = true;
+    do
+    {
+        if (arr[i] % 2 != 0) //首先质数不能被2整除
+        {
+            item = arr[i];
+            for (int j = 3; j < item;j++) 
+            {
+                if (item%j==0) //然后让不被2整除的数，循环除于（3到这个数-1）如果整除那么flag置为false，说明不是质数
+                {
+                    flag = false;
+		    break;
+                }
+            }
+            if (flag) 
+            {
+                printf("质数有：%d\n",item);
+            }
+        }
+        i++;
+    } while (i<10);
+    system("pause");
+    return 0;
+}
