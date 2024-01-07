@@ -1,0 +1,99 @@
+
+题目：从键盘输入一些数字，进行从小到大排序和从大到小排序
+知识点：
+（1）函数指针的使用
+（2）动态内存申请
+（3）冒泡排序法
+
+#include<stdio.h>
+#include<errno.h>
+#include<stdlib.h>
+#include<string.h>
+
+void die(char* message)
+{
+        if(errno)
+        {
+                perror(message);
+        }
+        else
+        {
+                printf("error:%s\n",message);
+        }
+        exit(1);
+}
+
+int sort_order(int a,int b)
+{
+        return a-b;
+}
+
+int reverse_order(int a,int b)
+{
+        return b-a;
+}
+
+typedef int(* cmpare_cb)(int,int);//函数类型为int (*)(int,int)，我们把这个类型自定义别名为cmpare_cb。
+
+int* bubble_sort(int *numbers,int count,cmpare_cb cmp)
+{
+        int *target=NULL;
+        int i=0,j=0,temp=0;
+        target=malloc(count*sizeof(int));
+        memcpy(target,numbers,count*sizeof(int));//用于将一块内存区域的数据复制到另一块内存区域
+
+        for(i=0;i<count;i++)
+        {
+                for(j=0;j<count-1-i;j++)
+                {
+                        if(cmp(target[j],target[j+1]) >0)
+                        {
+                                temp=target[j];
+                                target[j]=target[j+1];
+                                target[j+1]=temp;
+                        }
+                }
+        }
+        return target;
+}
+
+void test_sorting(int *numbers,int count,cmpare_cb cmp)
+{
+        int i=0;
+        int *sorted=NULL;
+        sorted=bubble_sort(numbers,count,cmp);
+        if(sorted == NULL)
+        {
+                die("Failed to sort as requested.");
+        }
+        for(i=0;i<count;i++)
+        {
+                printf("%d ",sorted[i]);
+        }
+
+        printf("\n");
+        free(sorted);
+}
+
+int main(int argc,char *argv[])
+{
+        int count=argc-1;
+        int i=0;
+        char **inputs=argv+1;
+        int *numbers=NULL;
+        numbers=malloc(count*sizeof(int));
+        if(numbers == NULL)
+                die("Memory error");
+
+        for(i=0;i<count;i++)
+        {
+                //printf("%s\n",inputs[i]);
+                numbers[i]=atoi(inputs[i]);
+                printf("%d\n",numbers[i]);
+        }
+
+        test_sorting(numbers,count,sort_order);
+        test_sorting(numbers,count,reverse_order);
+        free(numbers);
+        return 0;
+}
