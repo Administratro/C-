@@ -1,0 +1,96 @@
+#pragma warning(disable:4996)
+#include<stdio.h>
+#include<stdlib.h>
+
+struct student
+{
+	int id;
+	char name[100];
+};
+
+
+int sort_order(void* a, void* b) 
+{
+	return *(int*)a - *(int*)b;
+}
+
+void print(int *arr,int len) 
+{
+	for (int i=0;i<len;i++) 
+	{
+		printf("%d ",arr[i]);
+	}
+	printf("\n");
+}
+
+
+int cmp_stu(void *a,void *b)
+{
+	return ((struct student*)a)->id - ((struct student*)b)->id;
+}
+
+void print_stu(struct student *arr, int len)
+{
+	for (int i = 0; i < len;i++)
+	{
+		printf("id=%d,name=%s\n", (*(arr+i)).id, arr[i].name);
+	}
+	printf("\n");
+}
+
+void myswap(char* a,char* b,int weith) 
+{
+	//每次交换weith个字节的数据
+	char* temp = 0;
+	for (int i = 0; i < weith;i++) 
+	{
+		temp = *a;
+		*a = *b;
+		*b = temp;
+		a++;//交换完一个字符，指针向后移动一位
+		b++;//交换完一个字符，指针向后移动一位
+	}
+}
+
+void bubble_sort(void* base_arr , int len, int weith, int(*cmpfunc)(void* e1,void* e2)) 
+{
+	for (int i = 0; i < len;i++)
+	{
+		for (int j = 0; j < len - i - 1;j++)
+		{
+			//把base_arr这个目标强制转换成char*，是因为char*地址大小是1个字节，
+			//(char*)base_arr表示当前指针指向第一个元素位置
+			//(char*)base-arr+weith表示当前指针在下个元素首地址，每一个元素间隔weith字节
+
+			if (cmpfunc((char*)base_arr+j*weith,(char*)base_arr+(j+1)*weith)>0)
+			{
+				myswap((char*)base_arr + j * weith, (char*)base_arr + (j + 1) * weith,weith);
+			}
+		}
+	}
+}
+
+int main() 
+{
+	int arr[] = {1,8,3,2,7,5,0,4,6,9};
+	int len = sizeof(arr) / sizeof(arr[0]);
+	bubble_sort(arr,len,sizeof(arr[0]),sort_order);
+	print(arr,len);
+
+	struct student stu_arr[] = { {10,"zhangsan"},{4,"lishi"},{5,"wanwu"}};
+	bubble_sort(stu_arr,3,sizeof(stu_arr[0]),cmp_stu);
+	print_stu(stu_arr, 3);
+
+	system("pause");
+	return 0;
+}
+
+本程序主要是 bubble_sort函数的实现逻辑比较重要
+if (cmpfunc((char*)base_arr+j*weith,(char*)base_arr+(j+1)*weith)>0)
+{
+	myswap((char*)base_arr + j * weith, (char*)base_arr + (j + 1) * weith,weith);
+}
+
+(char*)base_arr+j*weith表示第一个元素的位置
+(char*)base_arr+(j+1)*weith表示第二个元素的位置
+每个元素间间隔weith个字节

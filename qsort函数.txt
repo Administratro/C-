@@ -1,0 +1,75 @@
+原型：
+void qsort(void *base,size_t num,size_t width,int (_cdecl *compare)(const void *e1,const void *e2))
+
+我们变换下：
+void qsort(void *base,
+		size_t num,
+		size_t width,
+		int (*cmp)(const void *e1,const void *e2)
+		)
+分析：
+void *base：表示我们排序的对象，比如int arr[10]，struct 结构体对象等
+size_t num:表示我们排序对象的大小，比int arr[10]，那么大小就是10
+size_t width：表示排序对象的一个元素的大小，比如sizeof(arr[0])
+int (*cmp)(const void *e1,const void *e2):表示我们自己定义的一个比较函数，如果e1==e2则返回0，e1>e2则返回一个大于0的数，e1<e2则返回一个小于0的数
+
+
+
+void *表示无类型的指针，可以接收任意类型指针
+比如：
+int a=10;
+void *pa=&a;
+*pa=0;//error
+*(int*)pa=0;//对于void *类型的指针，需要强制转换后才能进行解引用
+
+
+案例：
+对结构体数据学生以学号进行排序
+使用到qsort函数
+#pragma warning(disable:4996)
+#include<stdio.h>
+#include<stdlib.h>
+
+struct student
+{
+	int id;
+	char name[100];
+};
+
+
+void sort_stu2(struct student *arr,int len,int(*cmp)(int,int))
+{
+	//qsort的使用
+	//arr是要排序的目标
+	//len是这个目标的长度
+	//这个目标数组元素大小
+	//cmp是自定义的排序函数
+	qsort(arr,len,sizeof(struct student),cmp);
+}
+
+
+int cmp_stu(void *a,void *b)
+{
+	//void *表示变量a是一个无类型的指针，他可以接收任何类型
+	//但是要使用为个无类型的变量a时，需要强制类型转换成你需要的类型才能进行运算操作，不然后就报错
+	return ((struct student*)a)->id - ((struct student*)b)->id;
+}
+
+void print_stu(struct student *arr, int len)
+{
+	for (int i = 0; i < len;i++)
+	{
+		printf("id=%d,name=%s\n", (*(arr+i)).id, arr[i].name);
+	}
+}
+
+int main() 
+{
+	struct student stu_arr[] = { {10,"zhangsan"},{4,"lishi"},{5,"wanwu"}};
+	sort_stu2(stu_arr, 3, cmp_stu);
+	print_stu(stu_arr, 3);
+
+	system("pause");
+	return 0;
+
+}
